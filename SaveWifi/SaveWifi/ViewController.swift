@@ -20,15 +20,26 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         textfield.text = AppDelegate.ssid
-        infoLabel.text = WifiManager.default.getInterfaces()?.description
-        if !WifiManager.default.isPortableWifi {
-            infoLabel.backgroundColor = UIColor.red
-        }
+        infoLabel.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(refreshWifiInfo))
+        infoLabel.addGestureRecognizer(tap)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        refreshWifiInfo()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func refreshWifiInfo() {
+        infoLabel.text = WifiManager.default.getInterfaces()?.description
+        if WifiManager.default.isPortableWifi {
+            infoLabel.backgroundColor = UIColor.red
+        }
     }
 
     @IBAction func addLocation(_ sender: Any) {
@@ -63,7 +74,10 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        
+        if editingStyle == .delete {
+            AppDelegate.locations.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        }
     }
 }
 

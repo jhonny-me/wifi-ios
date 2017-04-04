@@ -52,13 +52,21 @@ extension LocationManager: CLLocationManagerDelegate {
             canShowNotification = false
             // make the local notification
             if WifiManager.default.isPortableWifi {
-                let content = UNMutableNotificationContent()
-                content.body = "You are still connect to your portable wifi"
-                content.badge = 1
-                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-                let request = UNNotificationRequest(identifier: "", content: content, trigger: trigger)
-                UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+                sendNotification()
             }
+        }
+    }
+    
+    func sendNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "Warning"
+        content.body = "You are still connect to your portable wifi"
+        content.sound = UNNotificationSound.default()
+        content.badge = 1
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        let request = UNNotificationRequest(identifier: "com.johnny.SaveWifi.notification", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request) { err in
+            print(err)
         }
     }
     
